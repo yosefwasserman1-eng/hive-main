@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
 const MySQLStore = expressMysqlSession(session);
 
 const app = express();
-const port = 3025;
+const port = process.env.PORT || 3025;
 
 app.use("/app", express.static(path.join(__dirname, "../../dist")));
 app.use(bodyParser.urlencoded({ extended: true, limit: "5mb" }));
@@ -43,10 +43,11 @@ app.get("/test", async (req, res) => {
 app.use("/actions", actionsRouter);
 
 const options = {
-  host: "localhost",
-  user: "root",
-  password: "24290678",
-  database: "hive",
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "24290678",
+  database: process.env.DB_NAME || "hive",
+  port: process.env.DB_PORT || 3306,
 };
 
 const sessionStore = new MySQLStore(options);
@@ -54,7 +55,7 @@ const sessionStore = new MySQLStore(options);
 app.use(
   session({
     store: sessionStore,
-    secret: "yair",
+    secret: process.env.SESSION_SECRET || "yair",
     resave: true,
     saveUninitialized: true,
   })
